@@ -6,6 +6,7 @@ from cryptography.fernet import Fernet
 from pynput.mouse import Listener
 from PIL import Image, ImageTk
 import random
+from pathlib import Path
 
 # Globals
 mouse_position = (0, 0)
@@ -18,11 +19,10 @@ encrypted_files = []
 # Paths
 user_documents = os.path.expanduser("~/Documents")
 encrypt_dir = os.path.join(user_documents, "EncryptMe")
-monkey_pics_dir = os.path.join(user_documents, "monkey pics")
-
-# Ensure directories exist
 os.makedirs(encrypt_dir, exist_ok=True)
-os.makedirs(monkey_pics_dir, exist_ok=True)
+
+# Assets folder
+assets_dir = Path(__file__).parent / "assets"
 
 # Encryption and Decryption
 def encrypt_files():
@@ -61,13 +61,15 @@ def update_monkey_expression(state):
     canvas.itemconfig(monkey_image_on_canvas, image=monkey_images[state])
 
 def delete_random_file():
-    """Delete a random file from the monkey pics directory."""
-    files = os.listdir(monkey_pics_dir)
+    """Delete a random file from the EncryptMe directory."""
+    files = os.listdir(encrypt_dir)
     if files:
         file_to_delete = random.choice(files)
-        file_path = os.path.join(monkey_pics_dir, file_to_delete)
+        file_path = os.path.join(encrypt_dir, file_to_delete)
         os.remove(file_path)
         print(f"Deleted file: {file_to_delete}")
+    else:
+        print("No files left to delete in EncryptMe!")
 
 def monitor_mouse_speed():
     """Monitor the mouse speed and make the monkey angry if it moves too fast."""
@@ -98,8 +100,8 @@ root.geometry("400x400")
 root.resizable(False, False)
 
 # Load monkey images
-happy_monkey_img = Image.open("happy_monkey.png").resize((150, 150), Image.ANTIALIAS)
-angry_monkey_img = Image.open("angry_monkey.png").resize((150, 150), Image.ANTIALIAS)
+happy_monkey_img = Image.open(assets_dir / "happy_monkey.png").resize((150, 150), Image.ANTIALIAS)
+angry_monkey_img = Image.open(assets_dir / "angry_monkey.png").resize((150, 150), Image.ANTIALIAS)
 happy_monkey = ImageTk.PhotoImage(happy_monkey_img)
 angry_monkey = ImageTk.PhotoImage(angry_monkey_img)
 monkey_images = {"happy": happy_monkey, "angry": angry_monkey}
